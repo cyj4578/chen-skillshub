@@ -1,6 +1,6 @@
 # 🛠️ Chen Skills Hub
 
-> 陈氏 WorkBuddy Skills 工具箱 —— 产品思维 × 技术实现 × 知识组网
+> 陈氏 Skills 工具箱 —— 产品思维 × 技术实现 × 知识组网
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -20,7 +20,7 @@
 ### 方式一：Git Clone（安装全部）
 
 ```bash
-git clone https://github.com/cyj4578/chen-skillshub.git ~/.workbuddy/skills/chen-skillshub
+git clone https://github.com/cyj4578/chen-skillshub.git
 ```
 
 ### 方式二：ClawHub 安装（单个）
@@ -34,7 +34,7 @@ clawhub install chen-knowledge-web
 
 ### 方式三：手动安装
 
-下载对应目录到 `~/.workbuddy/skills/<skill-name>/`
+下载对应目录到本地 skills 目录 `<skill-name>/`
 
 ---
 
