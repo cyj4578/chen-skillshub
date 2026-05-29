@@ -1,6 +1,9 @@
 ---
 name: chen-python-skills
-description: Python基础语法库，涵盖数据类型、运算符、流程控制、函数、面向对象、模块、文件IO、异常处理、常用内置函数与标准库等核心内容。Use when user asks about Python syntax, data types, loops, functions, OOP, modules, file operations, exceptions, or any Python fundamentals. Trigger keywords: Python, python, 语法, 数据类型, 列表, 字典, 函数, 类, 继承, 模块, 文件读写, 异常, 装饰器, 生成器, 迭代器, lambda, 列表推导式.
+description: Python基础语法库，覆盖30+核心主题：数据类型、字符串操作、运算符、列表/元组/字典/集合、条件语句与循环、函数定义与高级函数（lambda/map/filter/reduce）、装饰器、生成器与迭代器、面向对象编程（类/继承/多态/魔术方法）、模块与包管理、文件IO、异常处理、常用内置函数与标准库（os/sys/json/datetime/collections）、类型提示、推导式。适用场景：Python语法查询、数据类型操作、函数编写、面向对象设计、模块使用、文件读写、异常捕获、装饰器编写、生成器使用、列表推导式。
+version: 1.0.0
+homepage: https://github.com/cyj4578/chen-skillshub/tree/main/chen-python-skills
+emoji: "🐍"
 ---
 
 # Python 基础语法库

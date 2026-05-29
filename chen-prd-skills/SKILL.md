@@ -1,6 +1,9 @@
 ---
 name: chen-prd-skills
-description: 产品需求文档（PRD）书写规范技能。提供标准化的PRD结构、模板和书写准则，确保需求文档完整、可执行、可追踪。使用场景：编写新PRD、评审PRD、创建需求文档、格式化需求文档。
+description: 产品需求文档（PRD）书写规范技能。提供标准化的10章PRD结构、需求标识规范（US/FR/NFR/G/Q）、4级优先级定义（P0-P3）、10项评审Checklist、空白模板及书写指南。确保需求文档完整、可执行、可追踪。适用于编写新PRD、评审PRD、创建需求文档、格式化需求文档、用户故事编写、功能需求定义、产品需求管理。
+version: 1.0.0
+homepage: https://github.com/cyj4578/chen-skillshub/tree/main/chen-prd-skills
+emoji: "📋"
 ---
 
 # Chen PRD Skills

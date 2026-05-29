@@ -1,6 +1,9 @@
 ---
 name: chen-te-skills
-description: PRD文档测试评审技能。专门用于检测PRD文档中的逻辑漏洞、需求完整性问题和可测试性问题，并输出结构化审查报告。触发关键词：审查PRD、评审PRD、检测需求漏洞、测试需求文档、PRD质量检查、需求评审。
+description: PRD文档测试评审技能。专门用于检测PRD文档中的逻辑漏洞、需求完整性问题和可测试性问题。覆盖5大审查维度（结构完整性、逻辑一致性、需求完整性、可测试性、风险完整性），执行33项系统性检查，按4级漏洞等级（P0🔴/P1🟠/P2🟡/P3🔵）输出结构化审查报告。可与chen-prd-skills联动形成PRD书写→评审闭环。触发场景：审查PRD、评审PRD、检测需求漏洞、测试需求文档、PRD质量检查、需求评审、需求完整性检查、逻辑一致性验证、可测试性评估。
+version: 1.0.0
+homepage: https://github.com/cyj4578/chen-skillshub/tree/main/chen-te-skills
+emoji: "🔍"
 ---
 
 # Chen TE Skills - PRD 测试评审技能
