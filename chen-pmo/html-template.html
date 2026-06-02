@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>chen-pmo 执行报告 — {{CASE_NAME}} | 陈氏 PM Skill 编排引擎</title>
+<style>
+:root {
+  --bg: #f5f5f5;
+  --card-bg: #fff;
+  --text: #1a1a1a;
+  --text-secondary: #666;
+  --border: #e8e8e8;
+  --accent: #1890ff;
+  --accent-light: #e6f7ff;
+  --success: #52c41a;
+  --success-light: #f6ffed;
+  --warning: #faad14;
+  --warning-light: #fffbe6;
+  --danger: #ff4d4f;
+  --danger-light: #fff2f0;
+  --sidebar-width: 220px;
+  --radius: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: #001529;
+  color: #fff;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 10;
+  padding: 20px 0;
+}
+
+.sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 10px;
+}
+
+.sidebar-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.sidebar-header .subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav a:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+
+.sidebar-nav a.active {
+  color: #fff;
+  background: var(--accent);
+  border-left-color: #fff;
+}
+
+.sidebar-nav .step-num {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  border-radius: 50%;
+  margin-right: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.15);
+}
+
+.sidebar-nav a.active .step-num { background: #fff; color: var(--accent); }
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ===== Main ===== */
+.main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  padding: 30px;
+  max-width: 1200px;
+}
+
+/* Progress bar */
+.progress-bar-wrap {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.progress-track {
+  flex: 1;
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #40a9ff);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  width: {{PROGRESS_PCT}};
+}
+
+.progress-stats {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Pipeline report card */
+.pipeline-card {
+  background: linear-gradient(135deg, #001529, #003a70);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.pipeline-card h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.pipeline-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.pipeline-step {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255,255,255,0.15);
+}
+
+.pipeline-step.done { background: rgba(82, 196, 26, 0.3); }
+.pipeline-step.skip { background: rgba(250, 173, 20, 0.3); }
+.pipeline-step.fail { background: rgba(255, 77, 79, 0.3); }
+
+.pipeline-arrow {
+  color: rgba(255,255,255,0.4);
+  font-size: 16px;
+}
+
+.pipeline-meta {
+  margin-top: 16px;
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* Section card */
+.section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.section-header {
+  background: #fafafa;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.section-header:hover { background: #f0f0f0; }
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.section-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.section-badge.step1 { background: var(--accent-light); color: var(--accent); }
+.section-badge.step2 { background: #f9f0ff; color: #722ed1; }
+.section-badge.step3 { background: var(--success-light); color: var(--success); }
+.section-badge.step3-te { background: #fff7e6; color: #d46b08; }
+.section-badge.step4 { background: var(--warning-light); color: #d48806; }
+.section-badge.step5 { background: #fff0f6; color: #eb2f96; }
+.section-badge.step6 { background: var(--danger-light); color: var(--danger); }
+.section-badge.orchestrator { background: #001529; color: #fff; }
+
+.section-actions { display: flex; gap: 8px; }
+
+.btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.section-body {
+  padding: 20px;
+  max-height: 2000px;
+  overflow-y: auto;
+  transition: max-height 0.3s ease;
+  line-height: 1.8;
+}
+
+.section-body.collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.section-body.editing { background: #fffff0; }
+
+.section-body textarea {
+  width: 100%;
+  min-height: 300px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.8;
+  padding: 12px;
+  border: 1px dashed var(--accent);
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.section-body h2 {
+  font-size: 16px;
+  margin: 20px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+.section-body h2:first-child { margin-top: 0; }
+
+.section-body h3 {
+  font-size: 14px;
+  margin: 16px 0 8px;
+  color: #555;
+}
+
+.section-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.section-body th {
+  background: #fafafa;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.section-body td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+}
+
+.section-body tr:hover td { background: #fafafa; }
+
+.section-body ul, .section-body ol {
+  margin: 8px 0 8px 20px;
+}
+
+.section-body li { margin: 4px 0; }
+
+.section-body .badge-p0 {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.section-body .badge-p1 {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--warning-light);
+  color: #d48806;
+}
+
+.section-body .badge-p2 {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.section-body code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 13px;
+  color: #d4380d;
+}
+
+.section-body pre {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 12px 0;
+}
+
+.section-body blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 8px 16px;
+  margin: 12px 0;
+  background: var(--accent-light);
+  border-radius: 0 4px 4px 0;
+  color: #555;
+}
+
+.source-tag {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-size: 13px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.toast.show { opacity: 1; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 16px; }
+  .pipeline-steps { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>chen-pmo</h2>
+    <div class="subtitle">陈氏 PM Skill 编排引擎</div>
+  </div>
+  <ul class="sidebar-nav">
+    <li><a href="#pipeline" class="active"><span class="step-num">▸</span>Pipeline 概览</a></li>
+    <li><a href="#step1"><span class="step-num">1</span>市场调研</a></li>
+    <li><a href="#step2"><span class="step-num">2</span>竞品分析</a></li>
+    <li><a href="#step3"><span class="step-num">3</span>功能清单+PRD+TE审查</a></li>
+    <li><a href="#step4"><span class="step-num">4</span>系统架构</a></li>
+    <li><a href="#step5"><span class="step-num">5</span>UI 原型</a></li>
+    <li><a href="#step6"><span class="step-num">6</span>技术实现</a></li>
+  </ul>
+  <div class="sidebar-footer">v3.0 · 案例 #{{CASE_NUM}} · {{CASE_SHORT_NAME}}</div>
+</aside>
+
+<!-- Main Content -->
+<main class="main" id="mainContent">
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrap">
+    <span class="progress-label">Pipeline 进度</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-stats">{{DONE_COUNT}}/7 已完成</span>
+  </div>
+
+  <!-- Pipeline Report Card -->
+  <div class="pipeline-card" id="pipeline">
+    <h3>chen-pmo 执行报告 — {{CASE_NAME}}</h3>
+    <div class="pipeline-steps">
+      {{PIPELINE_STEPS}}
+    </div>
+    <div class="pipeline-meta">
+      <span>📋 需求：{{CASE_NAME}}</span>
+      <span>⏱ 执行时间：{{DATE}}</span>
+      <span>🔗 编排引擎：chen-pmo v3.0</span>
+    </div>
+  </div>
+
+  <!-- ============ Step 1: 市场调研 ============ -->
+  <div class="section" id="step1">
+    <div class="section-header" onclick="toggleSection('step1-body')">
+      <div class="section-title">
+        <span class="section-badge step1">Step 1</span>
+        <span>市场调研 — {{STEP1_TITLE}}</span>
+      </div>
+      <div class="section-actions">
+        <button class="btn" onclick="event.stopPropagation(); editSection('step1-content')">✏ 编辑</button>
+        <button class="btn" onclick="event.stopPropagation(); toggleSection('step1-body')">展开/折叠</button>
+      </div>
+    </div>
+    <div class="section-body" id="step1-body">
+      <div id="step1-content">{{STEP1_CONTENT}}</div>
+    </div>
+  </div>
+
+  <!-- ============ Step 2: 竞品分析 ============ -->
+  <div class="section" id="step2">
+    <div class="section-header" onclick="toggleSection('step2-body')">
+      <div class="section-title">
+        <span class="section-badge step2">Step 2</span>
+        <span>竞品分析 — {{STEP2_TITLE}}</span>
+      </div>
+      <div class="section-actions">
+        <button class="btn" onclick="event.stopPropagation(); editSection('step2-content')">✏ 编辑</button>
+        <button class="btn" onclick="event.stopPropagation(); toggleSection('step2-body')">展开/折叠</button>
+      </div>
+    </div>
+    <div class="section-body" id="step2-body">
+      <div id="step2-content">{{STEP2_CONTENT}}</div>
+    </div>
+  </div>
+
+  <!-- ============ Step 3: 功能清单 ============ -->
+  <div class="section" id="step3">
+    <div class="section-header" onclick="toggleSection('step3-body')">
+      <div class="section-title">
+        <span class="section-badge step3">Step 3</span>
+        <span>功能清单+PRD+TE审查 — {{STEP3_TITLE}}</span>
+      </div>
+      <div class="section-actions">
+        <button class="btn" onclick="event.stopPropagation(); editSection('step3-content')">✏ 编辑</button>
+        <button class="btn" onclick="event.stopPropagation(); toggleSection('step3-body')">展开/折叠</button>
+      </div>
+    </div>
+    <div class="section-body" id="step3-body">
+      <div id="step3-content">{{STEP3_CONTENT}}</div>
+    </div>
+  </div>
+
+  <!-- ============ Step 4: 系统架构 ============ -->
+  <div class="section" id="step4">
+    <div class="section-header" onclick="toggleSection('step4-body')">
+      <div class="section-title">
+        <span class="section-badge step4">Step 4</span>
+        <span>系统架构 — {{STEP4_TITLE}}</span>
+      </div>
+      <div class="section-actions">
+        <button class="btn" onclick="event.stopPropagation(); editSection('step4-content')">✏ 编辑</button>
+        <button class="btn" onclick="event.stopPropagation(); toggleSection('step4-body')">展开/折叠</button>
+      </div>
+    </div>
+    <div class="section-body" id="step4-body">
+      <div id="step4-content">{{STEP4_CONTENT}}</div>
+    </div>
+  </div>
+
+  <!-- ============ Step 5: UI 原型 ============ -->
+  <div class="section" id="step5">
+    <div class="section-header" onclick="toggleSection('step5-body')">
+      <div class="section-title">
+        <span class="section-badge step5">Step 5</span>
+        <span>UI 原型 — {{STEP5_TITLE}}</span>
+      </div>
+      <div class="section-actions">
+        <button class="btn" onclick="event.stopPropagation(); editSection('step5-content')">✏ 编辑</button>
+        <button class="btn" onclick="event.stopPropagation(); toggleSection('step5-body')">展开/折叠</button>
+      </div>
+    </div>
+    <div class="section-body" id="step5-body">
+      <div id="step5-content">{{STEP5_CONTENT}}</div>
+    </div>
+  </div>
+
+  <!-- ============ Step 6: 技术实现 ============ -->
+  <div class="section" id="step6">
+    <div class="section-header" onclick="toggleSection('step6-body')">
+      <div class="section-title">
+        <span class="section-badge step6">Step 6</span>
+        <span>技术实现方案 — {{STEP6_TITLE}}</span>
+      </div>
+      <div class="section-actions">
+        <button class="btn" onclick="event.stopPropagation(); editSection('step6-content')">✏ 编辑</button>
+        <button class="btn" onclick="event.stopPropagation(); toggleSection('step6-body')">展开/折叠</button>
+      </div>
+    </div>
+    <div class="section-body" id="step6-body">
+      <div id="step6-content">{{STEP6_CONTENT}}</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Section toggle =====
+function toggleSection(id) {
+  const body = document.getElementById(id);
+  if (body) body.classList.toggle('collapsed');
+}
+
+// ===== Section edit =====
+function editSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.classList.contains('editing')) {
+    saveSection(id, el);
+  } else {
+    const textarea = document.createElement('textarea');
+    textarea.value = el.innerHTML;
+    textarea.id = id + '-textarea';
+    el.innerHTML = '';
+    el.appendChild(textarea);
+    el.classList.add('editing');
+    textarea.focus();
+  }
+}
+
+function saveSection(id, el) {
+  const textarea = document.getElementById(id + '-textarea');
+  if (!textarea) return;
+  el.innerHTML = textarea.value;
+  el.classList.remove('editing');
+  showToast('✅ 已保存');
+}
+
+// ===== Export all =====
+function exportAll() {
+  const sections = document.querySelectorAll('.section-body > div[id$="-content"]');
+  let md = '# chen-pmo 执行报告 — {{CASE_NAME}}\n\n';
+  md += '> 生成时间：{{DATE}}\n';
+  md += '> 编排引擎：chen-pmo v3.0\n\n---\n\n';
+
+  const titles = ['市场调研', '竞品分析', '功能清单+PRD+TE审查', '系统架构', 'UI 原型', '技术实现'];
+  sections.forEach((s, i) => {
+    md += `## Step ${i+1}：${titles[i]}\n\n`;
+    let content = s.innerHTML
+      .replace(/<h2>/g, '\n## ').replace(/<\/h2>/g, '\n')
+      .replace(/<h3>/g, '\n### ').replace(/<\/h3>/g, '\n')
+      .replace(/<table>/g, '\n').replace(/<\/table>/g, '\n')
+      .replace(/<tr>/g, '').replace(/<\/tr>/g, '\n')
+      .replace(/<th>/g, '| ').replace(/<\/th>/g, ' ').replace(/<td>/g, '| ').replace(/<\/td>/g, ' ')
+      .replace(/<ul>/g, '').replace(/<\/ul>/g, '')
+      .replace(/<li>/g, '- ').replace(/<\/li>/g, '')
+      .replace(/<strong>/g, '**').replace(/<\/strong>/g, '**')
+      .replace(/<code>/g, '`').replace(/<\/code>/g, '`')
+      .replace(/<pre>/g, '\n```\n').replace(/<\/pre>/g, '\n```\n')
+      .replace(/<blockquote>/g, '\n> ').replace(/<\/blockquote>/g, '\n')
+      .replace(/<br\s*\/?>/g, '\n')
+      .replace(/<[^>]+>/g, '');
+    md += content + '\n\n---\n\n';
+  });
+
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `chen-pmo-report-{{CASE_SHORT_NAME_EN}}-{{DATE}}.md`;
+  a.click();
+  showToast('📥 已导出 Markdown');
+}
+
+// ===== Global edit =====
+let globalEdit = false;
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.key === 'e') {
+    e.preventDefault();
+    globalEdit = !globalEdit;
+    const contents = document.querySelectorAll('.section-body > div[id$="-content"]');
+    contents.forEach(c => {
+      if (globalEdit && !c.classList.contains('editing')) {
+        editSection(c.id);
+      }
+    });
+    showToast(globalEdit ? '✏ 全局编辑模式' : '📖 阅读模式');
+  }
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    const editing = document.querySelectorAll('.section-body > div[id$="-content"].editing');
+    editing.forEach(c => saveSection(c.id, c));
+    showToast('💾 全部已保存');
+  }
+});
+
+// ===== Toast =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== Sidebar scroll spy =====
+const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+const sections = document.querySelectorAll('.section[id]');
+
+window.addEventListener('scroll', () => {
+  let current = null;
+  sections.forEach(s => {
+    const top = s.getBoundingClientRect().top;
+    if (top < 150) current = s.id;
+  });
+  const pipeline = document.getElementById('pipeline');
+  if (pipeline && pipeline.getBoundingClientRect().top > 50) current = 'pipeline';
+
+  sidebarLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+
+// ===== Export button =====
+document.addEventListener('DOMContentLoaded', () => {
+  const exportBtn = document.createElement('button');
+  exportBtn.textContent = '📥 导出 Markdown';
+  exportBtn.className = 'btn';
+  exportBtn.style.cssText = 'position:fixed;bottom:30px;right:30px;padding:10px 18px;font-size:13px;z-index:100;background:#1890ff;color:#fff;border:none;border-radius:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.15);';
+  exportBtn.onclick = exportAll;
+  document.body.appendChild(exportBtn);
+});
+</script>
+
+</body>
+</html>
