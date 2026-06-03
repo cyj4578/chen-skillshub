@@ -1,24 +1,24 @@
 ---
-name: chen-pmo
+name: pm-agent
 description: 陈氏PM Skill 编排包。封装 8 个产品管理子模块（市场调研/竞品分析/功能清单/PRD生成/TE审查/系统架构/UI原型/技术实现），可单独调用任一模块，也可一键执行全流程 DAG 编排。安装一个 Skill 即可获得全部 PM 能力。适用于任何产品需求分析场景。
-trigger_keywords: PM编排, 产品经理, 需求分析, 产品方案, 功能设计, 系统设计, 市场调研, 竞品分析, 功能清单, 写PRD, 审查PRD, TE审查, 系统架构, UI原型, 技术方案, @skill:chen-pmo
+trigger_keywords: PM编排, 产品经理, 需求分析, 产品方案, 功能设计, 系统设计, 市场调研, 竞品分析, 功能清单, 写PRD, 审查PRD, TE审查, 系统架构, UI原型, 技术方案, @skill:pm-agent
 version: "4.0"
 type: "skill-package"
 agent_created: true
 ---
 
-# chen-pmo — 陈氏 PM Skill 编排包 v4.0
+# pm-agent — 陈氏 PM Skill 编排包 v4.0
 
 ## 这是什么
 
-`chen-pmo` 是一个 **Skill Package（技能编排包）**。与普通 Skill 不同：
+`pm-agent` 是一个 **Skill Package（技能编排包）**。与普通 Skill 不同：
 
 - 不是一份参考资料，而是一个**包含 8 个子模块的执行引擎**
 - **安装一个 = 获得全部**：市场调研、竞品分析、功能清单、PRD生成、TE审查、系统架构、UI原型、技术实现
 - **可以单独调**：选择一个模块独立执行
 - **可以组合跑**：一键执行全部 6+2 步 DAG 编排
 - **可以更新**：随时修改任一模块的指令和模板
-- **分享简单**：只需要安装 `chen-pmo` 一个 Skill
+- **分享简单**：只需要安装 `pm-agent` 一个 Skill
 
 ---
 
@@ -57,7 +57,7 @@ agent_created: true
 
 ### 意图 D：查看模块列表
 
-触发条件：用户说"有哪些模块""模块列表""chen-pmo能做什么"。
+触发条件：用户说"有哪些模块""模块列表""pm-agent能做什么"。
 
 → 输出下方模块清单表格，不执行任何模块。
 
@@ -97,7 +97,7 @@ agent_created: true
 ```
 
 **示例对话**：
-- 用户："@skill:chen-pmo 帮我做市场调研，医美直播行业"
+- 用户："@skill:pm-agent 帮我做市场调研，医美直播行业"
 - 引擎：识别意图 B → Read `references/modules/market-research.md` → 根据模块的 5 模块结构输出市场调研报告
 
 ---
@@ -116,7 +116,7 @@ agent_created: true
 ```
 
 **示例对话**：
-- 用户："@skill:chen-pmo 更新市场调研模块，增加要求必须引用艾瑞咨询报告"
+- 用户："@skill:pm-agent 更新市场调研模块，增加要求必须引用艾瑞咨询报告"
 - 引擎：Read → Edit 在引用规范中追加规则 → 确认
 
 ---
@@ -183,7 +183,7 @@ context:
 向用户展示执行计划，等待确认：
 
 ```
-## chen-pmo 执行计划
+## pm-agent 执行计划
 
 | Step | 模块 | 状态 | 说明 |
 |------|------|------|------|
@@ -265,13 +265,13 @@ TaskCreate: "Step 6: 技术实现"
 | `{{STEP1_TITLE}}` ~ `{{STEP6_TITLE}}` | 各步骤副标题 | |
 | `{{STEP1_CONTENT}}` ~ `{{STEP6_CONTENT}}` | 各步骤内容 HTML | STEP3_CONTENT 含功能清单+PRD+TE审查三个子模块 |
 
-3. **Write** 产物为 `chen-pmo-output-<英文简称>-<YYYYMMDD>.html`
+3. **Write** 产物为 `pm-agent-output-<英文简称>-<YYYYMMDD>.html`
 4. **preview_url** + **deliver_attachments** 交付
 
 **执行报告摘要**（对话中展示）：
 
 ```
-## chen-pmo 执行报告
+## pm-agent 执行报告
 
 | # | 步骤 | 状态 | 产物摘要 |
 |---|------|------|---------|
@@ -329,7 +329,7 @@ TaskCreate: "Step 6: 技术实现"
 **只需安装这一个 Skill**：
 
 ```
-clawhub install chen-pmo
+clawhub install pm-agent
 ```
 
 所有子模块、PRD 模板、TE 审查模板全部包含在内。无需安装任何其他 Skill。
@@ -340,7 +340,7 @@ clawhub install chen-pmo
 
 | 维度 | v3.0（旧） | v4.0（新） |
 |------|-----------|-----------|
-| 安装 | 需 9 个独立 Skill | 只需 1 个 chen-pmo |
+| 安装 | 需 9 个独立 Skill | 只需 1 个 pm-agent |
 | 子模块 | 8 个独立 Skill（`Skill` 工具动态加载） | 8 个 references 模块（`Read` 工具读取） |
 | 单模块调用 | 不支持（必须先装子 Skill 才能单独调） | 支持——引擎识别意图后 Read 对应模块 |
 | 模块更新 | 需分别编辑子 Skill 文件 | 在引擎内统一管理（Read→Edit references） |
