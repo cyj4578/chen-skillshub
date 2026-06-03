@@ -1,14 +1,16 @@
----
-name: chen-pm-tech-implementation
-description: 通用技术实现方案技能。输入架构设计和UI原型，输出技术选型、核心代码示例、部署方案和成本估算。默认技术栈Node.js + MySQL + Redis。适用任何技术方案输出场景。
-trigger_keywords: 技术方案, 技术选型, 技术栈, tech stack, implementation, 部署方案, 成本估算
----
+# 技术实现模块
 
-# chen-pm-tech-implementation — 通用技术实现
+## 模块定位
 
-## 技能定位
+chen-pmo 子模块。可独立调用，也可被编排引擎串联。将设计文档转化为可交付开发的完整技术方案。
 
-产品经理需求分析阶段第六步。将设计文档转化为可交付开发的完整技术方案。
+## 独立调用
+
+```
+@skill:chen-pmo 帮我出技术方案，架构和UI原型如下：XX
+```
+
+或被引擎在 DAG Step 6 自动调用（传入架构设计 + UI 原型）。
 
 ## 默认技术栈
 
@@ -25,15 +27,14 @@ trigger_keywords: 技术方案, 技术选型, 技术栈, tech stack, implementat
 
 | 参数 | 必填 | 说明 |
 |------|------|------|
-| 架构设计 | 是 | 来自 chen-pm-system-architecture 的输出 |
-| UI原型 | 是 | 来自 chen-pm-ui-prototype 的输出 |
+| 架构设计 | 是 | 来自系统架构模块的输出 |
+| UI原型 | 是 | 来自 UI 原型模块的输出 |
 | 技术约束 | 否 | 必须使用或不能使用的技术 |
 
-## 输出结构
+## 输出结构（5 模块）
 
 ### 模块 1：技术选型总览
 
-覆盖以下维度：
 - 前端（框架/UI库/状态管理/构建工具）
 - 后端（语言/框架/ORM）
 - 数据库（MySQL/Redis/其他）
@@ -75,18 +76,18 @@ trigger_keywords: 技术方案, 技术选型, 技术栈, tech stack, implementat
 - 安全注意事项
 - 后续迭代建议
 
-## 执行流程
+## 执行步骤
 
 ```
-Step 1: 分析架构设计中的技术依赖
-Step 2: 确定技术选型（优先默认技术栈）
-Step 3: 编写核心代码示例
-Step 4: 编写 Docker Compose 部署配置
-Step 5: 估算成本
-Step 6: 输出风险和建议
+1. 分析架构设计中的技术依赖
+2. 确定技术选型（优先默认技术栈）
+3. 编写核心代码示例
+4. 编写 Docker Compose 部署配置
+5. 估算成本
+6. 输出风险和建议
 ```
 
-## 案例经验（来自 4 个实战项目）
+## 实战经验
 
 - 直播系统：视频号直播 API 接入代码 + 微信支付 + 5 表 DDL + Docker Compose
 - 签到功能：Redis Bitmap 签到实现（setbit/getbit/bitcount）+ 加权随机抽奖算法（Alias Method）+ 成本对比（Redis 4.5GB vs MySQL 900GB）

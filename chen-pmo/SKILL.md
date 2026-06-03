@@ -1,150 +1,172 @@
 ---
 name: chen-pmo
-description: 陈氏PM Skill 编排引擎。将 8 个技能（6 PM + PRD 生成 + TE 逻辑审查）按声明式 DAG 流水线串联执行。加载后自动按 市场调研→竞品分析→功能清单→PRD生成→TE逻辑审查→系统架构→UI原型→技术实现 的固定流程编排，TE 审查作为强制质量关卡反问逻辑漏洞，确保全部需求自洽。任何产品需求分析场景适用。
-trigger_keywords: PM编排, 产品经理, skill编排, 需求分析, 产品方案, 功能设计, 系统设计, @skill:chen-pmo
-pipeline:
-  version: "3.0"
-  name: "chen-pmo"
-  type: "skill-orchestration"
-  steps:
-    - id: market-research
-      skill: chen-pm-market-research
-      depends_on: []
-      description: "市场调研"
-      on_failure: skip
-    - id: competitive-analysis
-      skill: chen-pm-competitive-analysis
-      depends_on: [market-research]
-      description: "竞品分析"
-      on_failure: skip
-    - id: feature-checklist
-      skill: chen-pm-feature-checklist
-      depends_on: [market-research, competitive-analysis]
-      description: "功能清单"
-      on_failure: stop
-    - id: prd-document
-      skill: chen-prd-skills
-      depends_on: [feature-checklist]
-      description: "PRD 文档生成（基于功能清单产出标准10章 PRD）"
-      on_failure: skip
-    - id: te-review
-      skill: chen-te-skills
-      depends_on: [prd-document]
-      description: "TE 逻辑审查（反问逻辑漏洞，确保全部需求自洽）"
-      on_failure: ask
-    - id: system-architecture
-      skill: chen-pm-system-architecture
-      depends_on: [feature-checklist, prd-document, te-review]
-      description: "系统架构"
-      on_failure: stop
-    - id: ui-prototype
-      skill: chen-pm-ui-prototype
-      depends_on: [feature-checklist, prd-document, te-review, system-architecture]
-      description: "UI原型"
-      on_failure: skip
-    - id: tech-implementation
-      skill: chen-pm-tech-implementation
-      depends_on: [system-architecture, ui-prototype]
-      description: "技术实现"
-      on_failure: skip
+description: 陈氏PM Skill 编排包。封装 8 个产品管理子模块（市场调研/竞品分析/功能清单/PRD生成/TE审查/系统架构/UI原型/技术实现），可单独调用任一模块，也可一键执行全流程 DAG 编排。安装一个 Skill 即可获得全部 PM 能力。适用于任何产品需求分析场景。
+trigger_keywords: PM编排, 产品经理, 需求分析, 产品方案, 功能设计, 系统设计, 市场调研, 竞品分析, 功能清单, 写PRD, 审查PRD, TE审查, 系统架构, UI原型, 技术方案, @skill:chen-pmo
+version: "4.0"
+type: "skill-package"
+agent_created: true
 ---
 
-# chen-pmo — 陈氏 PM Skill 编排引擎
+# chen-pmo — 陈氏 PM Skill 编排包 v4.0
 
 ## 这是什么
 
-`chen-pmo` 是一个 **Skill Orchestration（技能编排引擎）**。
+`chen-pmo` 是一个 **Skill Package（技能编排包）**。与普通 Skill 不同：
 
-和普通 Skill 不同——它不是一份"参考资料"，而是一个**执行引擎**。加载后，它会：
-1. 解析用户需求输入
-2. 按固定的 6 步 Pipeline 依次加载并执行子 Skills
-3. 在步骤间传递上下文数据
-4. 最终生成可交互的 HTML 预览工作台
-
-**一句话：`chen-pmo` = 8 个 Skill 封装成的编排引擎（6 PM + PRD + TE 审查）。**
+- 不是一份参考资料，而是一个**包含 8 个子模块的执行引擎**
+- **安装一个 = 获得全部**：市场调研、竞品分析、功能清单、PRD生成、TE审查、系统架构、UI原型、技术实现
+- **可以单独调**：选择一个模块独立执行
+- **可以组合跑**：一键执行全部 6+2 步 DAG 编排
+- **可以更新**：随时修改任一模块的指令和模板
+- **分享简单**：只需要安装 `chen-pmo` 一个 Skill
 
 ---
 
-## 固定 Pipeline（声明式 DAG）
+## 第一步：意图识别（必须执行）
+
+加载后，**先判断用户意图**，再决定走哪条路径。
+
+### 意图 A：全量编排
+
+触发条件：用户输入包含"完整方案""全流程""产品方案""设计一个XX系统""需求分析""出方案""做一个XX"等，且**没有指定具体单一模块名**。
+
+→ 执行 [全量编排模式](#全量编排模式-dag-流水线)
+
+### 意图 B：单模块调用
+
+触发条件：用户输入明确指向某个模块。
+
+| 用户关键词 | 对应模块文件 |
+|-----------|------------|
+| 市场调研 / 行业调研 / 调研 / market research | `references/modules/market-research.md` |
+| 竞品分析 / 竞争对手 / 竞品对比 / competitive analysis | `references/modules/competitive-analysis.md` |
+| 功能清单 / 需求清单 / 功能列表 / feature list | `references/modules/feature-checklist.md` |
+| 写PRD / PRD文档 / 需求文档 / 产品需求文档 | `references/modules/prd-document.md` |
+| 审查PRD / TE审查 / 逻辑审查 / 评审PRD / 检测漏洞 | `references/modules/te-review.md` |
+| 系统架构 / 数据流转 / 数据库设计 / API设计 / architecture | `references/modules/system-architecture.md` |
+| UI原型 / 原型图 / 页面设计 / 交互设计 / prototype | `references/modules/ui-prototype.md` |
+| 技术方案 / 技术选型 / 部署方案 / 成本估算 / implementation | `references/modules/tech-implementation.md` |
+
+→ 执行 [单模块调用模式](#单模块调用模式)
+
+### 意图 C：模块更新
+
+触发条件：用户说"更新XX模块""修改XX模块""XX模块加一个XX要求"。
+
+→ 执行 [模块更新模式](#模块更新模式)
+
+### 意图 D：查看模块列表
+
+触发条件：用户说"有哪些模块""模块列表""chen-pmo能做什么"。
+
+→ 输出下方模块清单表格，不执行任何模块。
+
+---
+
+## 模块清单（8 个）
+
+| # | 模块 | 文件 | 职责 | DAG位置 |
+|---|------|------|------|---------|
+| 1 | 市场调研 | `references/modules/market-research.md` | 市场规模、类型分类、功能全景、典型案例、技术对比 | Step 1（可跳过） |
+| 2 | 竞品分析 | `references/modules/competitive-analysis.md` | 竞品矩阵、全流程对比、合规分析、差异化策略 | Step 2（可跳过） |
+| 3 | 功能清单 | `references/modules/feature-checklist.md` | P0-P3 分级功能清单、明确不做项 | Step 3（不可跳过） |
+| 4 | PRD 生成 | `references/modules/prd-document.md` | 标准 10 章 PRD | Step 3-PRD（可跳过） |
+| 5 | TE 审查 | `references/modules/te-review.md` | 5 大维度 33 项逻辑漏洞审查 | Step 3-TE（强制质量关卡） |
+| 6 | 系统架构 | `references/modules/system-architecture.md` | 分层架构、数据流图、DDL、API、状态机 | Step 4（不可跳过） |
+| 7 | UI 原型 | `references/modules/ui-prototype.md` | 页面清单、页面结构、交互规范（Ant Design 3） | Step 5（可跳过） |
+| 8 | 技术实现 | `references/modules/tech-implementation.md` | 技术选型、核心代码、部署方案、成本估算 | Step 6（可跳过） |
+
+**模板库**：
+- PRD 模板 → `references/prd-templates/`
+- TE 审查模板 → `references/te-templates/`
+
+---
+
+## 单模块调用模式
+
+当识别为意图 B 时，按以下流程执行：
 
 ```
-                    需求输入
-                       │
-        ┌──────────────┼──────────────┐
-        ▼              ▼              │
-   Step 1           Step 2           │
-   市场调研          竞品分析          │
-   (可跳过)         (可跳过)          │
-        │              │              │
-        └──────┬───────┘              │
-               ▼                      │
-          Step 3                      │
-          功能清单                     │
-          (不能跳过)                   │
-               │                      │
-               ▼                      │
-       Step 3-PRD                     │
-       （内嵌 chen-prd-skills）        │
-       PRD 文档生成（可跳过）           │
-               │                      │
-               ▼                      │
-       Step 3-TE 🆕                   │
-       （内嵌 chen-te-skills）         │
-       TE 逻辑审查（询问用户）          │
-       5 大维度 33 项检查              │
-       反问逻辑漏洞 · 确保需求自洽     │
-               │                      │
-        ┌──────┴──────┐              │
-        ▼              ▼              │
-   Step 4           Step 5           │
-   系统架构          UI 原型          │
-   (不能跳过)       (可跳过)          │
-        │              │              │
-        └──────┬───────┘              │
-               ▼                      │
-          Step 6                      │
-          技术实现                     │
-          (可跳过)                     │
-               │                      │
-               ▼                      │
-       HTML 预览工作台                 │
+1. TaskCreate: "[模块名] 单模块执行"
+2. Read references/modules/[模块名].md — 获取模块的完整执行指令
+3. 按模块指令的"执行步骤"逐步执行
+   - 若涉及 WebSearch/WebFetch，正常搜索和引用
+   - 若涉及模板参考，Read references/prd-templates/ 或 te-templates/ 中的文件
+4. 输出结果（文本/表格/代码）
+5. TaskUpdate status=completed
 ```
 
-**依赖规则**：
-- Step 1 和 Step 2 无依赖，**可并行执行**
-- Step 3 依赖 Step 1 + Step 2 都完成
-- Step 3-PRD（chen-prd-skills）依赖 Step 3 完成，在 Step 3 内部串联执行
-- Step 3-TE 🆕（chen-te-skills）依赖 Step 3-PRD 完成，**强制质量关卡**：执行 5 大维度 33 项系统性检查，反问逻辑漏洞，确保全部需求自洽
-- Step 4 和 Step 5 同依赖 Step 3 + Step 3-PRD + Step 3-TE，**可并行执行**
-- Step 6 依赖 Step 4 + Step 5 都完成
-
-**失败策略**：
-- `stop`：该步骤失败则**终止整个 Pipeline**（功能清单、系统架构不可跳过）
-- `ask`：该步骤失败则**询问用户**是否继续（TE 逻辑审查——发现 P0 漏洞时暂停，用户决定是否修复后重试）
-- `skip`：该步骤失败则**跳过继续**（市场调研、竞品分析、PRD 生成、UI原型、技术实现可跳过）
+**示例对话**：
+- 用户："@skill:chen-pmo 帮我做市场调研，医美直播行业"
+- 引擎：识别意图 B → Read `references/modules/market-research.md` → 根据模块的 5 模块结构输出市场调研报告
 
 ---
 
-## 组合的 8 个 Skill
+## 模块更新模式
 
-| # | Skill | 职责 | 输入要求 | 输出 |
-|---|-------|------|---------|------|
-| 1 | `chen-pm-market-research` | 市场调研 | 需求背景 + 行业 | 市场规模、类型分类、功能全景、典型案例、技术对比 |
-| 2 | `chen-pm-competitive-analysis` | 竞品分析 | 需求背景 + 行业 | 竞品矩阵、全流程对比、合规分析、差异化策略 |
-| 3 | `chen-pm-feature-checklist` | 功能清单 | 需求描述 + 限制条件 + Step1/2输出 | P0-P3 分级功能清单、明确不做项 |
-| 🆕 | `chen-prd-skills` | PRD 文档（Step 3 内嵌） | 功能清单输出 | 标准 10 章 PRD（问题陈述/目标/用户故事/FR/NFR/成功指标/风险等） |
-| 🆕 | `chen-te-skills` | **TE 逻辑审查（Step 3 内嵌）** | PRD 文档全文 | 5 大维度 33 项检查报告（P0🔴/P1🟠/P2🟡/P3🔵），反问逻辑漏洞，确保全部需求自洽 |
-| 4 | `chen-pm-system-architecture` | 系统架构 | 功能清单 + PRD + TE 审查 + 需求背景 | 分层架构、数据流图、DDL、API、状态机 |
-| 5 | `chen-pm-ui-prototype` | UI 原型 | 功能清单 + PRD + TE 审查 + 架构设计 | 页面清单、页面结构、交互规范（Ant Design 3） |
-| 6 | `chen-pm-tech-implementation` | 技术实现 | 架构设计 + UI 原型 | 技术选型、核心代码、部署方案、成本估算 |
+当识别为意图 C 时：
+
+```
+1. Read references/modules/[模块名].md — 获取当前模块内容
+2. 根据用户指令，用 Edit 工具修改模块文件
+   - 追加指令规则
+   - 修改输出结构
+   - 更新引用规范
+3. 确认修改内容并告知用户
+```
+
+**示例对话**：
+- 用户："@skill:chen-pmo 更新市场调研模块，增加要求必须引用艾瑞咨询报告"
+- 引擎：Read → Edit 在引用规范中追加规则 → 确认
 
 ---
 
-## 编排执行流程
+## 全量编排模式（DAG 流水线）
+
+当识别为意图 A 时，按以下 DAG 执行全部 6+2 步。
+
+### DAG 声明
+
+```yaml
+pipeline:
+  steps:
+    - id: market-research
+      module: references/modules/market-research.md
+      depends_on: []
+      on_failure: skip
+    - id: competitive-analysis
+      module: references/modules/competitive-analysis.md
+      depends_on: [market-research]
+      on_failure: skip
+    - id: feature-checklist
+      module: references/modules/feature-checklist.md
+      depends_on: [market-research, competitive-analysis]
+      on_failure: stop
+    - id: prd-document
+      module: references/modules/prd-document.md
+      depends_on: [feature-checklist]
+      on_failure: skip
+    - id: te-review
+      module: references/modules/te-review.md
+      depends_on: [prd-document]
+      on_failure: ask
+    - id: system-architecture
+      module: references/modules/system-architecture.md
+      depends_on: [feature-checklist, prd-document, te-review]
+      on_failure: stop
+    - id: ui-prototype
+      module: references/modules/ui-prototype.md
+      depends_on: [feature-checklist, prd-document, te-review, system-architecture]
+      on_failure: skip
+    - id: tech-implementation
+      module: references/modules/tech-implementation.md
+      depends_on: [system-architecture, ui-prototype]
+      on_failure: skip
+```
 
 ### Phase 1：解析需求
 
-从用户输入中提取结构化上下文：
+从用户输入提取结构化上下文：
 
 ```yaml
 context:
@@ -156,136 +178,97 @@ context:
   platform: "<目标平台：小程序/Web/App>"
 ```
 
-### Phase 2：确认 Pipeline
+### Phase 2：确认计划
 
-向用户展示 Pipeline 执行计划，格式如下：
+向用户展示执行计划，等待确认：
 
 ```
 ## chen-pmo 执行计划
 
-| Step | Skill | 状态 | 说明 |
-|------|-------|------|------|
-| 1 | chen-pm-market-research | ⏳ 待执行 | 调研 [行业] 的市场现状和典型方案 |
-| 2 | chen-pm-competitive-analysis | ⏳ 待执行 | 分析 [行业] 的竞品模式和合规要求 |
-| 3 | chen-pm-feature-checklist → chen-prd-skills → chen-te-skills | ⏳ 待执行 | 输出功能清单（P0-P3）→ 生成标准 PRD → TE 逻辑审查（5维33项） |
-| 4 | chen-pm-system-architecture | ⏳ 待执行 | 设计系统架构和数据流转 |
-| 5 | chen-pm-ui-prototype | ⏳ 待执行 | 设计 UI 原型（Ant Design 3） |
-| 6 | chen-pm-tech-implementation | ⏳ 待执行 | 输出技术实现方案 |
+| Step | 模块 | 状态 | 说明 |
+|------|------|------|------|
+| 1 | 市场调研 | ⏳ | 调研 [行业] 市场现状 |
+| 2 | 竞品分析 | ⏳ | 分析竞品模式和合规 |
+| 3 | 功能清单 → PRD → TE审查 | ⏳ | P0-P3 清单 → 10章PRD → 33项审查 |
+| 4 | 系统架构 | ⏳ | 分层架构 + 数据表 + API |
+| 5 | UI 原型 | ⏳ | 页面清单 + 交互规范 |
+| 6 | 技术实现 | ⏳ | 技术选型 + 代码 + 部署 |
 
 依赖关系：1+2→3→3-PRD→3-TE→4+5→6
-预计输出：HTML 预览工作台 + 各步骤产物文件 + TE 审查报告
 
 确认执行？(Y/n/跳过某步骤)
 ```
 
 ### Phase 3：执行 Pipeline
 
-按 DAG 逐步执行，**使用 Task 工具追踪进度**：
+使用 Task 工具追踪进度。关键规则：
+- 每个模块：先 `Read` 对应 `references/modules/` 文件获取执行指令，再按指令执行
+- 模块之间通过上下文传递数据（上游产出摘要传给下游）
+- 并行批次同时启动
+- 失败时按 `on_failure` 策略处理
 
 **并行批次 1**：Step 1 + Step 2 并行
+
 ```
 TaskCreate: "Step 1: 市场调研" + "Step 2: 竞品分析"
-→ 并行加载 chen-pm-market-research + chen-pm-competitive-analysis
-→ 各自完成任务后 TaskUpdate status=completed
+→ Read references/modules/market-research.md → 执行市场调研
+→ Read references/modules/competitive-analysis.md → 执行竞品分析
+→ 各自完成后 TaskUpdate status=completed
 ```
 
-**Step 3**：功能清单 + PRD 文档 + TE 逻辑审查（等待 Step 1+2）
+**Step 3**：功能清单 + PRD + TE 审查（等待 Step 1+2）
+
 ```
-TaskCreate: "Step 3: 功能清单" + "Step 3-PRD: PRD 文档" + "Step 3-TE: TE 逻辑审查"
-→ 先加载 chen-pm-feature-checklist，传入 Step1/2 输出作为上下文
-→ TaskUpdate status=completed
-→ 再加载 chen-prd-skills，传入功能清单输出，生成标准 10 章 PRD
-→ PRD 产物融入 HTML 工作台 Step 3 的模板内容
-→ TaskUpdate status=completed
-→ 再加载 chen-te-skills，传入 PRD 文档全文
-→ 执行 5 大维度 33 项系统性检查（结构完整性/逻辑一致性/需求完整性/可测试性/风险完整性）
-→ 输出结构化审查报告（P0🔴/P1🟠/P2🟡/P3🔵），反问逻辑漏洞
-→ 若 P0 问题 > 0，按 on_failure: ask 暂停并询问用户处理方式
-→ TaskUpdate status=completed
+TaskCreate: "Step 3: 功能清单" + "Step 3-PRD: PRD 文档" + "Step 3-TE: TE 审查"
+→ Read references/modules/feature-checklist.md，传入 Step1/2 输出 → TaskUpdate completed
+→ Read references/modules/prd-document.md，传入功能清单输出 → TaskUpdate completed
+  （如需模板，Read references/prd-templates/ 中的文件）
+→ Read references/modules/te-review.md，传入 PRD 全文
+  （如需审查清单，Read references/te-templates/PRD审查清单.md）
+→ 输出审查报告，若 P0>0 则 on_failure: ask 暂停 → TaskUpdate completed
 ```
 
 **并行批次 2**：Step 4 + Step 5 并行（等待 Step 3-TE）
+
 ```
 TaskCreate: "Step 4: 系统架构" + "Step 5: UI原型"
-→ 并行加载 chen-pm-system-architecture + chen-pm-ui-prototype
-→ 各自完成任务后 TaskUpdate status=completed
+→ Read references/modules/system-architecture.md → 执行
+→ Read references/modules/ui-prototype.md → 执行
+→ 各自完成后 TaskUpdate status=completed
 ```
 
 **Step 6**：技术实现（等待 Step 4+5）
+
 ```
 TaskCreate: "Step 6: 技术实现"
-→ 加载 chen-pm-tech-implementation，传入 Step3/4/5 输出
+→ Read references/modules/tech-implementation.md → 执行
 → TaskUpdate status=completed
 ```
 
-**关键规则**：
-- 每步通过 `Skill` 工具加载对应子 Skill，并传入需求上下文 + 上游步骤产物摘要
-- 子 Skill 负责产出具体内容（文本/图表/代码）
-- 编排引擎负责调度、状态追踪、数据传递
-- 某步骤失败时按 `on_failure` 策略处理（stop=终止 / skip=跳过继续）
-
 ### Phase 4：汇总输出
 
-所有步骤完成后，**必须使用统一 HTML 模板**输出。
+所有步骤完成后，使用统一 HTML 模板输出。
 
-#### ⚠ 强制规则：必须使用 `html-template.html`
-
-引擎目录下的 `html-template.html` 是**唯一合法的 HTML 输出模板**。每次执行时：
-
-1. **读取模板**：`Read` `.workbuddy/skills/chen-pmo/html-template.html`
-2. **替换变量**：将模板中的 `{{变量}}` 替换为本次案例的实际内容
-3. **写入产物**：输出为 `chen-pmo-output-<简短英文名>-<YYYYMMDD>.html`
-
-**模板变量替换表**：
+1. **Read** `html-template.html`
+2. **替换** 以下模板变量：
 
 | 变量 | 含义 | 示例 |
 |------|------|------|
 | `{{CASE_NAME}}` | 案例完整名称 | 员工报餐系统 |
 | `{{CASE_SHORT_NAME}}` | 侧边栏简称 | 员工报餐 |
 | `{{CASE_SHORT_NAME_EN}}` | 文件名用英文简称 | meal |
-| `{{CASE_NUM}}` | 案例编号 | 5 |
+| `{{CASE_NUM}}` | 案例编号 | 6 |
 | `{{DATE}}` | 执行日期 | 2026-06-02 |
 | `{{PROGRESS_PCT}}` | 进度条百分比 | 100% |
 | `{{DONE_COUNT}}` | 完成步骤数 | 7 |
-| `{{PIPELINE_STEPS}}` | Pipeline 步骤状态 HTML | 见下方格式 |
-| `{{STEP1_TITLE}}` ~ `{{STEP6_TITLE}}` | 各步骤副标题 | 企业报餐/智能表单系统 |
-| `{{STEP1_CONTENT}}` ~ `{{STEP6_CONTENT}}` | 各步骤内容 HTML | (完整 HTML 片段)。注意：`{{STEP3_CONTENT}}` 需包含「功能清单」+「PRD 文档」+「TE 审查报告」三个子模块 |
+| `{{PIPELINE_STEPS}}` | Pipeline 步骤状态 HTML | 见模板格式 |
+| `{{STEP1_TITLE}}` ~ `{{STEP6_TITLE}}` | 各步骤副标题 | |
+| `{{STEP1_CONTENT}}` ~ `{{STEP6_CONTENT}}` | 各步骤内容 HTML | STEP3_CONTENT 含功能清单+PRD+TE审查三个子模块 |
 
-**Pipeline 步骤状态格式**（`{{PIPELINE_STEPS}}`）：
+3. **Write** 产物为 `chen-pmo-output-<英文简称>-<YYYYMMDD>.html`
+4. **preview_url** + **deliver_attachments** 交付
 
-```html
-<span class="pipeline-step done">1. 市场调研 ✅</span>
-<span class="pipeline-arrow">→</span>
-<span class="pipeline-step done">2. 竞品分析 ✅</span>
-...
-```
-
-状态 class：`done`（完成）、`skip`（跳过）、`fail`（失败）。
-
-**模板不可修改项**（保证 UI 一致性）：
-- 所有 CSS 样式（`:root` 变量、颜色、字体、边距、阴影等）
-- 侧边栏结构（深色 #001529 + 滚动联动高亮）
-- 进度条样式（渐变蓝色条）
-- Pipeline 概览卡片（深蓝渐变背景）
-- 各 Section 折叠/展开交互
-- 编辑功能（✏ 按钮 → textarea）
-- 导出 Markdown 按钮（右下角悬浮蓝色圆角按钮）
-- Toast 提示
-- 响应式断点（768px）
-
-**仅允许替换的内容**：
-- HTML `<title>` 标签
-- 侧边栏底部的案例信息
-- Pipeline 卡片中的需求描述、日期、步骤状态
-- 6 个 Section 的标题和 body 内容
-
-#### 交付步骤
-
-1. `preview_url` 预览 HTML 产物
-2. `deliver_attachments` 交付 HTML 文件
-3. 在对话中输出执行报告摘要
-
-**执行报告摘要格式**（对话中展示，不写入文件）：
+**执行报告摘要**（对话中展示）：
 
 ```
 ## chen-pmo 执行报告
@@ -296,7 +279,7 @@ TaskCreate: "Step 6: 技术实现"
 | 2 | 竞品分析 | ✅ | Z方案对比 + 合规矩阵 |
 | 3 | 功能清单 | ✅ | N项 P0/P1/P2 |
 | 3-PRD | PRD 文档 | ✅ | 10 章标准 PRD |
-| 3-TE 🆕 | TE 逻辑审查 | ✅/⚠ | P0:N P1:N P2:N（审查通过/有待修复项） |
+| 3-TE | TE 逻辑审查 | ✅/⚠ | P0:N P1:N P2:N |
 | 4 | 系统架构 | ✅ | X图 + Y表 + Z API |
 | 5 | UI原型 | ✅ | N页面 + 交互规范 |
 | 6 | 技术实现 | ✅ | 技术栈 + 代码 + 部署 |
@@ -304,56 +287,17 @@ TaskCreate: "Step 6: 技术实现"
 
 ---
 
-## 使用方式
+## 失败策略
 
-### 方式一：一键执行（推荐）
-
-直接输入需求，引擎自动执行全流程：
-
-```
-@skill:chen-pmo
-
-需求背景：原有商城小程序需要做一个签到功能
-业务痛点：XX
-功能限制：XX
-```
-
-### 方式二：跳过某步骤
-
-```
-@skill:chen-pmo
-
-需求背景：XXX
-跳过：市场调研, 竞品分析
-```
-
-### 方式三：只执行部分步骤
-
-```
-@skill:chen-pmo
-
-需求背景：XXX
-仅执行：功能清单, 系统架构
-```
+| 策略 | 含义 | 适用模块 |
+|------|------|---------|
+| `stop` | 该步失败则**终止 Pipeline** | 功能清单、系统架构（不可跳过） |
+| `ask` | 该步失败则**询问用户**是否继续 | TE 审查（P0 漏洞时暂停） |
+| `skip` | 该步失败则**跳过继续** | 市场调研、竞品分析、PRD、UI原型、技术实现（可跳过） |
 
 ---
 
-## 与普通 Skill 的本质区别
-
-| 维度 | 普通 Skill | chen-pmo（Skill Orchestration） |
-|------|-----------|-------------------------------|
-| 性质 | 参考资料/指令集 | 执行引擎 |
-| 加载后 | AI 在对话中使用其知识 | AI 开始按 Pipeline 逐步编排 |
-| 产出 | 通常为单份文档/分析 | 6+2步骤产物 + PRD + TE 审查报告 + HTML 工作台 |
-| 可组合 | 否 | 是——封装了 8 个 Skill |
-| 状态追踪 | 无 | Task 工具追踪每步进度 |
-| 失败处理 | 无 | stop/skip/ask 三级策略 |
-
----
-
-## 基线约定（无行业/领域硬编码）
-
-所有 6 个子 Skill 是通用的，不包含任何特定行业/领域的内容：
+## 基线约定
 
 | 约定项 | 默认值 | 说明 |
 |-------|--------|------|
@@ -361,7 +305,8 @@ TaskCreate: "Step 6: 技术实现"
 | 技术栈基线 | Node.js + MySQL + Redis + Docker | 可被用户覆盖 |
 | 引用时限 | 市场调研标注来源；竞品分析仅近 2 年 | 自动执行 |
 | 功能分级 | P0/P1/P2/P3 | 统一标准 |
-| PRD 规范 | chen-prd-skills 10章标准 | Step 3 内嵌自动生成 |
+| PRD 规范 | 10 章标准 + PRD 模板库 | references/prd-templates/ |
+| TE 审查 | 5 大维度 33 项 + 审查模板库 | references/te-templates/ |
 | 输出格式 | 中文 + 结构化（表格/列表/缩进） | 用户偏好 |
 | 平台默认 | 小程序 | 可从需求中自动识别 |
 
@@ -369,46 +314,35 @@ TaskCreate: "Step 6: 技术实现"
 
 ## 已验证案例
 
-本引擎已通过 4 个不同领域的实战验证：
-
 | # | 案例 | 行业 | 特色 |
 |---|------|------|------|
 | 1 | 视频号直播系统 | 电商直播 | 多店铺同时开播、视频号 API |
 | 2 | 签到+抽奖功能 | 电商留存 | Redis Bitmap、加权随机抽奖 |
 | 3 | 账号注销功能 | 医疗健康 | 个保法合规、多端同步、冷静期 |
-| 4 | 山姆代购小程序 | O2O 代购 | 单小程序双角色、无库存极简设计 |
+| 4 | 山姆代购小程序 | O2O 代购 | 单小程序双角色、无库存设计 |
+| 5 | 员工报餐系统 | 企业服务 | 表单收集、Excel 统计、定时提醒 |
 
 ---
 
-## 可扩展节点（可选串联，Step 3-PRD 和 Step 3-TE 已内置）
+## 分享与安装
 
-引擎在 6+2 步基础上支持串联其他 Skills：
+**只需安装这一个 Skill**：
 
-```yaml
-# 知识库归档（可选）
-- id: archive
-  skill: ima-skills
-  depends_on: [prd-document, te-review, tech-implementation]
-  description: "归档到 IMA 笔记"
+```
+clawhub install chen-pmo
 ```
 
-完整链路 === chen-pmo（6+2步：含 PRD 生成 + TE 审查）→ ima-skills
-
-> **注意**：`chen-prd-skills` 和 `chen-te-skills` 已内置在 Step 3 中（功能清单 → PRD 生成 → TE 逻辑审查），不需要再作为扩展节点添加。
+所有子模块、PRD 模板、TE 审查模板全部包含在内。无需安装任何其他 Skill。
 
 ---
 
-## 前置依赖
+## 与 v3.0 的本质变化
 
-确保以下 8 个 Skills 已安装（其中 chen-prd-skills 和 chen-te-skills 在 Step 3 内串联）：
-
-```
-~/.workbuddy/skills/chen-pm-market-research/
-~/.workbuddy/skills/chen-pm-competitive-analysis/
-~/.workbuddy/skills/chen-pm-feature-checklist/
-~/.workbuddy/skills/chen-prd-skills/            ← Step 3 内嵌 PRD 生成
-~/.workbuddy/skills/chen-te-skills/             ← Step 3 内嵌 TE 逻辑审查（强制质量关卡）
-~/.workbuddy/skills/chen-pm-system-architecture/
-~/.workbuddy/skills/chen-pm-ui-prototype/
-~/.workbuddy/skills/chen-pm-tech-implementation/
-```
+| 维度 | v3.0（旧） | v4.0（新） |
+|------|-----------|-----------|
+| 安装 | 需 9 个独立 Skill | 只需 1 个 chen-pmo |
+| 子模块 | 8 个独立 Skill（`Skill` 工具动态加载） | 8 个 references 模块（`Read` 工具读取） |
+| 单模块调用 | 不支持（必须先装子 Skill 才能单独调） | 支持——引擎识别意图后 Read 对应模块 |
+| 模块更新 | 需分别编辑子 Skill 文件 | 在引擎内统一管理（Read→Edit references） |
+| 分享 | 需说明"请安装全部 9 个" | "安装这一个就行" |
+| 类型 | `skill-orchestration` | `skill-package` |
