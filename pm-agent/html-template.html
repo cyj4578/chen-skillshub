@@ -460,7 +460,7 @@ body {
     <li><a href="#step5"><span class="step-num">5</span>UI 原型</a></li>
     <li><a href="#step6"><span class="step-num">6</span>技术实现</a></li>
   </ul>
-  <div class="sidebar-footer">v3.0 · 案例 #{{CASE_NUM}} · {{CASE_SHORT_NAME}}</div>
+  <div class="sidebar-footer">v5.0 · 案例 #{{CASE_NUM}} · {{CASE_SHORT_NAME}}</div>
 </aside>
 
 <!-- Main Content -->
@@ -482,7 +482,7 @@ body {
     <div class="pipeline-meta">
       <span>📋 需求：{{CASE_NAME}}</span>
       <span>⏱ 执行时间：{{DATE}}</span>
-      <span>🔗 编排引擎：pm-agent v3.0</span>
+      <span>🔗 编排引擎：pm-agent v5.0</span>
     </div>
   </div>
 
@@ -630,7 +630,7 @@ function exportAll() {
   const sections = document.querySelectorAll('.section-body > div[id$="-content"]');
   let md = '# pm-agent 执行报告 — {{CASE_NAME}}\n\n';
   md += '> 生成时间：{{DATE}}\n';
-  md += '> 编排引擎：pm-agent v3.0\n\n---\n\n';
+  md += '> 编排引擎：pm-agent v5.0\n\n---\n\n';
 
   const titles = ['市场调研', '竞品分析', '功能清单+PRD+TE审查', '系统架构', 'UI 原型', '技术实现'];
   sections.forEach((s, i) => {

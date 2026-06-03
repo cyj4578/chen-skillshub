@@ -1,30 +1,30 @@
 ---
 name: pm-agent
-description: 陈氏PM Skill 编排包。封装 8 个产品管理子模块（市场调研/竞品分析/功能清单/PRD生成/TE审查/系统架构/UI原型/技术实现），可单独调用任一模块，也可一键执行全流程 DAG 编排。安装一个 Skill 即可获得全部 PM 能力。适用于任何产品需求分析场景。
+description: 通用 PM 流程编排引擎。封装 8 个产品管理子模块（市场调研/竞品分析/功能清单/PRD生成/TE审查/系统架构/UI原型/技术实现），可单独调用任一模块，也可一键执行全流程 DAG 编排。支持 WorkBuddy / Cursor / Codex / Claude Code / Copilot 等工具。
 trigger_keywords: PM编排, 产品经理, 需求分析, 产品方案, 功能设计, 系统设计, 市场调研, 竞品分析, 功能清单, 写PRD, 审查PRD, TE审查, 系统架构, UI原型, 技术方案, @skill:pm-agent
-version: "4.0"
+version: "5.0"
 type: "skill-package"
 agent_created: true
 ---
 
-# pm-agent — 陈氏 PM Skill 编排包 v4.0
+# pm-agent — 通用 PM 流程编排引擎 v5.0
 
-## 这是什么
+> 跨平台支持：WorkBuddy / Cursor / Codex / Claude Code / VS Code Copilot / Cline / Continue / 任何 AI 编程助手
 
-`pm-agent` 是一个 **Skill Package（技能编排包）**。与普通 Skill 不同：
+## 引擎说明
 
-- 不是一份参考资料，而是一个**包含 8 个子模块的执行引擎**
-- **安装一个 = 获得全部**：市场调研、竞品分析、功能清单、PRD生成、TE审查、系统架构、UI原型、技术实现
-- **可以单独调**：选择一个模块独立执行
-- **可以组合跑**：一键执行全部 6+2 步 DAG 编排
-- **可以更新**：随时修改任一模块的指令和模板
-- **分享简单**：只需要安装 `pm-agent` 一个 Skill
+`pm-agent` 是一个**产品需求分析流程编排引擎**，将 8 个 PM 子模块封装成统一流程。**一个文件即全部**——安装/复制一份即可使用所有能力。
+
+| 模式 | 触发方式 | 说明 |
+|------|-----------|------|
+| **全量编排** | 输入"完整方案""全流程""需求分析""设计一个XX系统" | 按 DAG 流水线自动执行全部 6+2 步 |
+| **单模块调用** | 输入"市场调研XX""写PRD""做竞品分析" | 只执行指定模块 |
 
 ---
 
-## 第一步：意图识别（必须执行）
+## 第一步：意图识别（必须先执行）
 
-加载后，**先判断用户意图**，再决定走哪条路径。
+读取用户输入后，按以下规则判断意图：
 
 ### 意图 A：全量编排
 
@@ -36,26 +36,20 @@ agent_created: true
 
 触发条件：用户输入明确指向某个模块。
 
-| 用户关键词 | 对应模块文件 |
-|-----------|------------|
-| 市场调研 / 行业调研 / 调研 / market research | `references/modules/market-research.md` |
-| 竞品分析 / 竞争对手 / 竞品对比 / competitive analysis | `references/modules/competitive-analysis.md` |
-| 功能清单 / 需求清单 / 功能列表 / feature list | `references/modules/feature-checklist.md` |
-| 写PRD / PRD文档 / 需求文档 / 产品需求文档 | `references/modules/prd-document.md` |
-| 审查PRD / TE审查 / 逻辑审查 / 评审PRD / 检测漏洞 | `references/modules/te-review.md` |
-| 系统架构 / 数据流转 / 数据库设计 / API设计 / architecture | `references/modules/system-architecture.md` |
-| UI原型 / 原型图 / 页面设计 / 交互设计 / prototype | `references/modules/ui-prototype.md` |
-| 技术方案 / 技术选型 / 部署方案 / 成本估算 / implementation | `references/modules/tech-implementation.md` |
+| 用户关键词 | 对应模块 | 职责 |
+|-----------|----------|------|
+| 市场调研 / 行业调研 / 调研 | 模块 1：市场调研 | 市场规模、类型分类、功能全景、典型案例 |
+| 竞品分析 / 竞争对手 / 竞品对比 | 模块 2：竞品分析 | 竞品矩阵、全流程对比、合规、差异化 |
+| 功能清单 / 需求清单 / 功能列表 | 模块 3：功能清单 | P0-P3 分级功能清单、明确不做项 |
+| 写PRD / PRD文档 / 需求文档 | 模块 4：PRD 生成 | 标准 10 章 PRD |
+| 审查PRD / TE审查 / 逻辑审查 | 模块 5：TE 审查 | 5 大维度 33 项逻辑漏洞检查 |
+| 系统架构 / 数据库设计 / API设计 | 模块 6：系统架构 | 分层架构、数据流图、DDL、API |
+| UI原型 / 页面设计 / 交互设计 | 模块 7：UI 原型 | 页面清单、页面结构、交互规范 |
+| 技术方案 / 技术选型 / 部署方案 | 模块 8：技术实现 | 技术选型、核心代码、部署方案 |
 
 → 执行 [单模块调用模式](#单模块调用模式)
 
-### 意图 C：模块更新
-
-触发条件：用户说"更新XX模块""修改XX模块""XX模块加一个XX要求"。
-
-→ 执行 [模块更新模式](#模块更新模式)
-
-### 意图 D：查看模块列表
+### 意图 C：查看模块列表
 
 触发条件：用户说"有哪些模块""模块列表""pm-agent能做什么"。
 
@@ -65,20 +59,16 @@ agent_created: true
 
 ## 模块清单（8 个）
 
-| # | 模块 | 文件 | 职责 | DAG位置 |
-|---|------|------|------|---------|
-| 1 | 市场调研 | `references/modules/market-research.md` | 市场规模、类型分类、功能全景、典型案例、技术对比 | Step 1（可跳过） |
-| 2 | 竞品分析 | `references/modules/competitive-analysis.md` | 竞品矩阵、全流程对比、合规分析、差异化策略 | Step 2（可跳过） |
-| 3 | 功能清单 | `references/modules/feature-checklist.md` | P0-P3 分级功能清单、明确不做项 | Step 3（不可跳过） |
-| 4 | PRD 生成 | `references/modules/prd-document.md` | 标准 10 章 PRD | Step 3-PRD（可跳过） |
-| 5 | TE 审查 | `references/modules/te-review.md` | 5 大维度 33 项逻辑漏洞审查 | Step 3-TE（强制质量关卡） |
-| 6 | 系统架构 | `references/modules/system-architecture.md` | 分层架构、数据流图、DDL、API、状态机 | Step 4（不可跳过） |
-| 7 | UI 原型 | `references/modules/ui-prototype.md` | 页面清单、页面结构、交互规范（Ant Design 3） | Step 5（可跳过） |
-| 8 | 技术实现 | `references/modules/tech-implementation.md` | 技术选型、核心代码、部署方案、成本估算 | Step 6（可跳过） |
-
-**模板库**：
-- PRD 模板 → `references/prd-templates/`
-- TE 审查模板 → `references/te-templates/`
+| # | 模块 | 职责 | DAG 位置 |
+|---|------|------|---------|
+| 1 | 市场调研 | 市场规模、类型分类、功能全景、典型案例、技术对比 | Step 1（可跳过） |
+| 2 | 竞品分析 | 竞品矩阵、全流程对比、合规分析、差异化策略 | Step 2（可跳过） |
+| 3 | 功能清单 | P0-P3 分级功能清单、明确不做项 | Step 3（不可跳过） |
+| 4 | PRD 生成 | 标准 10 章 PRD | Step 3-PRD（可跳过） |
+| 5 | TE 审查 | 5 大维度 33 项逻辑漏洞审查 | Step 3-TE（强制质量关卡） |
+| 6 | 系统架构 | 分层架构、数据流图、DDL、API、状态机 | Step 4（不可跳过） |
+| 7 | UI 原型 | 页面清单、页面结构、交互规范（Ant Design 3） | Step 5（可跳过） |
+| 8 | 技术实现 | 技术选型、核心代码、部署方案、成本估算 | Step 6（可跳过） |
 
 ---
 
@@ -87,79 +77,66 @@ agent_created: true
 当识别为意图 B 时，按以下流程执行：
 
 ```
-1. TaskCreate: "[模块名] 单模块执行"
-2. Read references/modules/[模块名].md — 获取模块的完整执行指令
-3. 按模块指令的"执行步骤"逐步执行
-   - 若涉及 WebSearch/WebFetch，正常搜索和引用
-   - 若涉及模板参考，Read references/prd-templates/ 或 te-templates/ 中的文件
+1. 根据用户关键词确定目标模块
+2. 读取下方对应模块的【执行指令】部分
+3. 按模块指令的输出格式逐步执行
+   - 若涉及搜索，使用你可用的搜索工具（WebSearch / Google / Brave 等）
+   - 若涉及网页读取，使用你可用的抓取工具（WebFetch / WebReader 等）
 4. 输出结果（文本/表格/代码）
-5. TaskUpdate status=completed
 ```
 
 **示例对话**：
-- 用户："@skill:pm-agent 帮我做市场调研，医美直播行业"
-- 引擎：识别意图 B → Read `references/modules/market-research.md` → 根据模块的 5 模块结构输出市场调研报告
-
----
-
-## 模块更新模式
-
-当识别为意图 C 时：
-
-```
-1. Read references/modules/[模块名].md — 获取当前模块内容
-2. 根据用户指令，用 Edit 工具修改模块文件
-   - 追加指令规则
-   - 修改输出结构
-   - 更新引用规范
-3. 确认修改内容并告知用户
-```
-
-**示例对话**：
-- 用户："@skill:pm-agent 更新市场调研模块，增加要求必须引用艾瑞咨询报告"
-- 引擎：Read → Edit 在引用规范中追加规则 → 确认
+- 用户："帮我做市场调研，医美直播行业"
+- 你：识别意图 B → 读取 [模块 1：市场调研](#模块-1市场调研) → 按 5 模块结构输出报告
 
 ---
 
 ## 全量编排模式（DAG 流水线）
 
-当识别为意图 A 时，按以下 DAG 执行全部 6+2 步。
+当识别为意图 A 时，按以下 DAG 执行全部步骤。
 
-### DAG 声明
+### DAG 依赖声明
 
-```yaml
+```
 pipeline:
   steps:
-    - id: market-research
-      module: references/modules/market-research.md
-      depends_on: []
+    - id: market-research          # Step 1
+      module: "模块 1：市场调研"
+      depends_on: []               # 无依赖，可最先执行
+      on_failure: skip             # 失败则跳过继续
+
+    - id: competitive-analysis      # Step 2
+      module: "模块 2：竞品分析"
+      depends_on: [market-research] # 依赖 Step 1
       on_failure: skip
-    - id: competitive-analysis
-      module: references/modules/competitive-analysis.md
-      depends_on: [market-research]
-      on_failure: skip
-    - id: feature-checklist
-      module: references/modules/feature-checklist.md
+
+    - id: feature-checklist        # Step 3
+      module: "模块 3：功能清单"
       depends_on: [market-research, competitive-analysis]
-      on_failure: stop
-    - id: prd-document
-      module: references/modules/prd-document.md
+      on_failure: stop             # 失败则终止整个 Pipeline
+
+    - id: prd-document            # Step 3-PRD
+      module: "模块 4：PRD 生成"
       depends_on: [feature-checklist]
       on_failure: skip
-    - id: te-review
-      module: references/modules/te-review.md
+
+    - id: te-review                # Step 3-TE
+      module: "模块 5：TE 审查"
       depends_on: [prd-document]
-      on_failure: ask
-    - id: system-architecture
-      module: references/modules/system-architecture.md
+      on_failure: ask              # 失败则询问用户
+
+    - id: system-architecture      # Step 4
+      module: "模块 6：系统架构"
       depends_on: [feature-checklist, prd-document, te-review]
       on_failure: stop
-    - id: ui-prototype
-      module: references/modules/ui-prototype.md
+
+    - id: ui-prototype             # Step 5
+      module: "模块 7：UI 原型"
       depends_on: [feature-checklist, prd-document, te-review, system-architecture]
       on_failure: skip
-    - id: tech-implementation
-      module: references/modules/tech-implementation.md
+
+    - id: tech-implementation      # Step 6
+      module: "模块 8：技术实现"
       depends_on: [system-architecture, ui-prototype]
       on_failure: skip
 ```
@@ -168,7 +145,7 @@ pipeline:
 
 从用户输入提取结构化上下文：
 
-```yaml
+```
 context:
   background: "<需求背景>"
   pain_points: "<业务痛点>"
@@ -187,12 +164,12 @@ context:
 
 | Step | 模块 | 状态 | 说明 |
 |------|------|------|------|
-| 1 | 市场调研 | ⏳ | 调研 [行业] 市场现状 |
-| 2 | 竞品分析 | ⏳ | 分析竞品模式和合规 |
-| 3 | 功能清单 → PRD → TE审查 | ⏳ | P0-P3 清单 → 10章PRD → 33项审查 |
-| 4 | 系统架构 | ⏳ | 分层架构 + 数据表 + API |
-| 5 | UI 原型 | ⏳ | 页面清单 + 交互规范 |
-| 6 | 技术实现 | ⏳ | 技术选型 + 代码 + 部署 |
+| 1 | 市场调研 | ⏳ 待执行 | 调研 [行业] 市场现状 |
+| 2 | 竞品分析 | ⏳ 待执行 | 分析竞品模式和合规 |
+| 3 | 功能清单 → PRD → TE审查 | ⏳ 待执行 | P0-P3 清单 → 10章PRD → 33项审查 |
+| 4 | 系统架构 | ⏳ 待执行 | 分层架构 + 数据表 + API |
+| 5 | UI 原型 | ⏳ 待执行 | 页面清单 + 交互规范 |
+| 6 | 技术实现 | ⏳ 待执行 | 技术选型 + 代码 + 部署 |
 
 依赖关系：1+2→3→3-PRD→3-TE→4+5→6
 
@@ -201,8 +178,8 @@ context:
 
 ### Phase 3：执行 Pipeline
 
-使用 Task 工具追踪进度。关键规则：
-- 每个模块：先 `Read` 对应 `references/modules/` 文件获取执行指令，再按指令执行
+关键规则：
+- 每个模块按其下方 [模块指令](#模块指令) 中的输出格式执行
 - 模块之间通过上下文传递数据（上游产出摘要传给下游）
 - 并行批次同时启动
 - 失败时按 `on_failure` 策略处理
@@ -210,65 +187,36 @@ context:
 **并行批次 1**：Step 1 + Step 2 并行
 
 ```
-TaskCreate: "Step 1: 市场调研" + "Step 2: 竞品分析"
-→ Read references/modules/market-research.md → 执行市场调研
-→ Read references/modules/competitive-analysis.md → 执行竞品分析
-→ 各自完成后 TaskUpdate status=completed
+→ 执行 [模块 1：市场调研] 全部步骤
+→ 执行 [模块 2：竞品分析] 全部步骤
+→ 将两步产出传递给下游
 ```
 
 **Step 3**：功能清单 + PRD + TE 审查（等待 Step 1+2）
 
 ```
-TaskCreate: "Step 3: 功能清单" + "Step 3-PRD: PRD 文档" + "Step 3-TE: TE 审查"
-→ Read references/modules/feature-checklist.md，传入 Step1/2 输出 → TaskUpdate completed
-→ Read references/modules/prd-document.md，传入功能清单输出 → TaskUpdate completed
-  （如需模板，Read references/prd-templates/ 中的文件）
-→ Read references/modules/te-review.md，传入 PRD 全文
-  （如需审查清单，Read references/te-templates/PRD审查清单.md）
-→ 输出审查报告，若 P0>0 则 on_failure: ask 暂停 → TaskUpdate completed
+→ 执行 [模块 3：功能清单] 全部步骤，传入 Step1/2 输出
+→ 执行 [模块 4：PRD 生成] 全部步骤，传入功能清单输出
+→ 执行 [模块 5：TE 审查] 全部步骤，传入 PRD 全文
+   - 若发现 P0 问题 > 0，暂停并询问用户处理方式
 ```
 
 **并行批次 2**：Step 4 + Step 5 并行（等待 Step 3-TE）
 
 ```
-TaskCreate: "Step 4: 系统架构" + "Step 5: UI原型"
-→ Read references/modules/system-architecture.md → 执行
-→ Read references/modules/ui-prototype.md → 执行
-→ 各自完成后 TaskUpdate status=completed
+→ 执行 [模块 6：系统架构] 全部步骤，传入功能清单+PRD+TE审查结论
+→ 执行 [模块 7：UI 原型] 全部步骤，传入功能清单+PRD+TE审查结论+架构设计
 ```
 
 **Step 6**：技术实现（等待 Step 4+5）
 
 ```
-TaskCreate: "Step 6: 技术实现"
-→ Read references/modules/tech-implementation.md → 执行
-→ TaskUpdate status=completed
+→ 执行 [模块 8：技术实现] 全部步骤，传入架构设计+UI原型
 ```
 
 ### Phase 4：汇总输出
 
-所有步骤完成后，使用统一 HTML 模板输出。
-
-1. **Read** `html-template.html`
-2. **替换** 以下模板变量：
-
-| 变量 | 含义 | 示例 |
-|------|------|------|
-| `{{CASE_NAME}}` | 案例完整名称 | 员工报餐系统 |
-| `{{CASE_SHORT_NAME}}` | 侧边栏简称 | 员工报餐 |
-| `{{CASE_SHORT_NAME_EN}}` | 文件名用英文简称 | meal |
-| `{{CASE_NUM}}` | 案例编号 | 6 |
-| `{{DATE}}` | 执行日期 | 2026-06-02 |
-| `{{PROGRESS_PCT}}` | 进度条百分比 | 100% |
-| `{{DONE_COUNT}}` | 完成步骤数 | 7 |
-| `{{PIPELINE_STEPS}}` | Pipeline 步骤状态 HTML | 见模板格式 |
-| `{{STEP1_TITLE}}` ~ `{{STEP6_TITLE}}` | 各步骤副标题 | |
-| `{{STEP1_CONTENT}}` ~ `{{STEP6_CONTENT}}` | 各步骤内容 HTML | STEP3_CONTENT 含功能清单+PRD+TE审查三个子模块 |
-
-3. **Write** 产物为 `pm-agent-output-<英文简称>-<YYYYMMDD>.html`
-4. **preview_url** + **deliver_attachments** 交付
-
-**执行报告摘要**（对话中展示）：
+所有步骤完成后，输出结构化执行报告：
 
 ```
 ## pm-agent 执行报告
@@ -281,7 +229,7 @@ TaskCreate: "Step 6: 技术实现"
 | 3-PRD | PRD 文档 | ✅ | 10 章标准 PRD |
 | 3-TE | TE 逻辑审查 | ✅/⚠ | P0:N P1:N P2:N |
 | 4 | 系统架构 | ✅ | X图 + Y表 + Z API |
-| 5 | UI原型 | ✅ | N页面 + 交互规范 |
+| 5 | UI 原型 | ✅ | N页面 + 交互规范 |
 | 6 | 技术实现 | ✅ | 技术栈 + 代码 + 部署 |
 ```
 
@@ -297,18 +245,390 @@ TaskCreate: "Step 6: 技术实现"
 
 ---
 
+## 模块指令
+
+以下是 8 个模块的完整执行指令，所有平台的 AI 助手均可直接使用，无需加载额外文件。
+
+### 模块 1：市场调研
+
+**输入要求**：需求背景 + 行业名称
+
+**输出格式**：
+
+```
+## 市场调研报告：[行业名称]
+
+### 1. 市场规模与增长趋势
+（数据来源：艾瑞咨询/易观分析/行业白皮书，标注日期）
+（若无权威数据，明确标注"行业经验估算"）
+
+### 2. 系统类型分类
+| 类型 | 代表产品 | 核心功能 | 适用场景 |
+|------|---------|---------|---------|
+
+### 3. 核心功能全景
+（按用户端/运营端/管理端三端拆解）
+
+### 4. 典型案例（3-5 个）
+| 案例 | 功能亮点 | 商业模式 | 参考价值 |
+|------|---------|---------|---------|
+
+### 5. 技术实现对比
+| 技术方案 | 优势 | 成本 | 适用规模 |
+|---------|------|------|---------|
+```
+
+**引用规范**：标注数据来源和日期；优先近 2 年数据；无权威数据标注"行业经验估算"。
+
+---
+
+### 模块 2：竞品分析
+
+**输入要求**：需求背景 + 行业名称 + 市场调研输出（若有）
+
+**输出格式**：
+
+```
+## 竞品分析报告：[行业名称]
+
+### 1. 竞品矩阵
+| 产品 | 定位 | 目标用户 | 商业模式 | 价格 |
+|------|------|---------|---------|------|
+
+### 2. 全流程对比（3-5 个竞品）
+注册→登录→核心功能→支付→客服，逐环节对比
+
+### 3. 合规分析
+（若涉及医疗/金融/教育，标注监管要求和风险点）
+
+### 4. 差异化策略
+（基于竞品短板，提出本产品的 3 个差异化功能点）
+```
+
+---
+
+### 模块 3：功能清单
+
+**输入要求**：需求描述 + 限制条件 + 市场调研/竞品分析输出（若有）
+
+**输出格式**：
+
+```
+## 功能清单：[系统名称]
+
+### P0（核心功能 - 必须有，没有就无法上线）
+| 功能点 | 描述 | 验收标准 |
+|--------|------|---------|
+
+### P1（重要功能 - MVP 后优先做）
+（同上格式）
+
+### P2（次要功能 - 资源充裕时做）
+（同上格式）
+
+### P3（锦上添花 - 本期不做，记入待办池）
+（同上格式）
+
+### 明确不做项
+| 功能点 | 不做原因 |
+|--------|---------|
+```
+
+**分级标准**：
+- P0：没有就没法上线，用户核心诉求
+- P1：重要但不阻碍核心流程
+- P2：nice to have
+- P3：明确本期不做
+
+---
+
+### 模块 4：PRD 生成
+
+**输入要求**：功能清单输出
+
+**输出格式**（标准 10 章 PRD）：
+
+```
+# 产品需求文档（PRD）：[系统名称]
+
+## 1. 问题陈述
+（1-2 句：用户是谁、遇到什么问题、现有方案为什么不够好）
+
+## 2. 产品目标
+（量化成功指标，如 DAU +30%、下单转化率 +15%）
+
+## 3. 用户故事
+| 编号 | 作为<角色> | 我想要<功能> | 以便<价值> | 优先级 |
+|------|-----------|-------------|-----------|--------|
+
+## 4. 功能需求（FR）
+逐功能描述：功能名、触发条件、前置条件、主流程、异常流程、优先级
+
+## 5. 非功能需求（NFR）
+- 性能：响应时间 <200ms（P99）、并发支持 1000 QPS
+- 兼容性：iOS 14+、Android 8+、微信 8.0+
+- 安全性：HTTPS、敏感数据加密、等保二级
+
+## 6. 信息架构
+（站点地图 / 页面层级结构）
+
+## 7. 数据结构
+（核心数据表 DDL，含主键、外键、索引、注释）
+
+## 8. 接口清单
+| 接口名 | 方法 | 路径 | 请求参数 | 响应结构 |
+|--------|------|------|---------|---------|
+
+## 9. 里程碑
+| 阶段 | 交付物 | 时间 |
+|------|--------|------|
+
+## 10. 风险与假设
+- 技术风险：
+- 合规风险：
+- 资源风险：
+- 假设条件：
+```
+
+---
+
+### 模块 5：TE 逻辑审查
+
+**输入要求**：PRD 文档全文
+
+**审查维度**（5 大维度 33 项检查）：
+
+```
+### 维度 1：结构完整性（6 项）
+- [ ] 10 章是否齐全
+- [ ] 每章是否有可验证的内容（非空话）
+- [ ] 用户故事是否覆盖所有 P0 功能
+- [ ] 接口清单是否覆盖所有功能需求
+- [ ] 数据表是否支撑所有业务流程
+- [ ] 风险章节是否识别了已知技术债
+
+### 维度 2：逻辑一致性（8 项）
+- [ ] 用户故事 → 功能需求：是否一一对应
+- [ ] 功能需求 → 接口清单：每个功能是否有对应 API
+- [ ] 功能需求 → 数据表：每张表是否有业务含义
+- [ ] 信息架构 → 页面清单：是否有孤儿页面
+- [ ] 异常流程是否覆盖：网络超时/权限不足/数据为空
+- [ ] 状态机是否闭环（无悬空状态）
+- [ ] 依赖的系统/API 是否真实存在
+- [ ] 时间逻辑是否自洽（如：先发货还是先退款）
+
+### 维度 3：需求完整性（7 项）
+- [ ] 边界条件：最大值/最小值/空值
+- [ ] 并发场景：多人同时操作同一数据
+- [ ] 权限矩阵：不同角色能看到/操作什么
+- [ ] 数据迁移：存量数据如何处理
+- [ ] 国际化：是否需要多语言
+- [ ] 审计日志：谁在什么时候改了什么
+- [ ] 通知触达：站内信/短信/微信模板消息
+
+### 维度 4：可测试性（6 项）
+- [ ] 每个功能需求是否有明确的验收标准
+- [ ] 验收标准是否可自动化（非"体验良好"类主观描述）
+- [ ] 异常路径是否有测试用例
+- [ ] 性能需求是否有具体数值
+- [ ] 兼容性需求是否有明确版本号
+- [ ] 是否标注了"暂不支持"的边界
+
+### 维度 5：风险完整性（6 项）
+- [ ] 是否识别了依赖的第三方服务及其降级方案
+- [ ] 是否识别了数据安全风险点
+- [ ] 是否识别了合规风险（隐私政策/用户协议/行业监管）
+- [ ] 是否识别了上线风险（灰度方案/回滚方案）
+- [ ] 是否识别了运营成本（客服/审核/内容安全）
+- [ ] 假设条件是否明确标注
+```
+
+**输出格式**：
+
+```
+## TE 逻辑审查报告：[系统名称]
+
+### 审查结论
+- P0 问题：N 个（必须修复后才能进入开发）
+- P1 问题：N 个（建议修复）
+- P2 问题：N 个（可记录到待办）
+
+### P0 🔴 必须修复
+| # | 维度 | 问题 | 位置 | 修复建议 |
+|---|------|------|------|---------|
+
+### P1 🟠 建议修复
+（同上格式）
+
+### P2 🟡 记录待办
+（同上格式）
+
+### 总体评价
+（1-2 句话：这个 PRD 是否逻辑自洽，能否进入开发）
+```
+
+---
+
+### 模块 6：系统架构
+
+**输入要求**：功能清单 + PRD + TE 审查结论
+
+**输出格式**：
+
+```
+## 系统架构设计：[系统名称]
+
+### 1. 分层架构
+（用 ASCII 或 Mermaid 画出：客户端 → CDN → 网关 → 业务层 → 数据层）
+
+### 2. 技术选型
+| 层级 | 技术 | 版本 | 选型理由 |
+|------|------|------|---------|
+
+### 3. 核心数据流
+（用户操作 → 前端 → API → 服务 → 数据库 → 返回）
+
+### 4. 数据库设计
+（核心表 DDL，含注释、索引、分表策略）
+
+### 5. API 设计
+| 接口 | 方法 | 路径 | 请求体 | 响应体 |
+|------|------|------|--------|--------|
+
+### 6. 状态机
+（核心业务状态流转图：如订单状态 待支付→已支付→已发货→已完成→已取消）
+
+### 7. 非功能设计
+- 缓存策略：Redis，key 设计规范
+- 消息队列：异步任务队列方案
+- 限流熔断：QPS 阈值、降级策略
+- 监控告警：关键指标、告警规则
+```
+
+---
+
+### 模块 7：UI 原型
+
+**输入要求**：功能清单 + PRD + TE 审查结论 + 架构设计
+
+**UI 基线**（Ant Design 3，可被用户覆盖）：
+- 组件库：Ant Design 3（React）
+- 布局：侧边栏 240px + 主内容区
+- 颜色：主色 #1890FF / 成功 #52C41A / 警告 #FAAD14 / 错误 #FF4D4F
+
+**输出格式**：
+
+```
+## UI 原型设计：[系统名称]
+
+### 1. 页面清单
+| 页面名 | 路径 | 核心功能 | 所需权限 |
+|--------|------|---------|---------|
+
+### 2. 页面结构（逐页面描述）
+#### 页面：[页面名称]
+- **顶部导航**：Logo + 菜单项 + 用户头像
+- **筛选区**：表单组件，支持日期/下拉/搜索
+- **数据区**：Table 组件，支持排序/筛选/分页
+- **操作区**：按钮组（新建/导出/批量操作）
+- **底部**：分页器
+
+### 3. 交互规范
+- 表单校验：失焦触发 + 提交时全量校验
+- 列表刷新：操作成功后自动刷新
+- 删除确认：二次确认弹窗
+- 文件上传：支持 jpg/png/pdf，单文件 <10MB
+- 加载态：骨架屏 / Spin
+- 空状态：Empty 组件 + 引导文案
+
+### 4. 响应式断点
+- Mobile：< 768px
+- Tablet：768px — 1024px
+- Desktop：> 1024px
+```
+
+---
+
+### 模块 8：技术实现
+
+**输入要求**：架构设计 + UI 原型
+
+**技术栈基线**（可被用户覆盖）：
+- 后端：Node.js 18+ / Python 3.11+
+- 数据库：MySQL 8.0 + Redis 7
+- 部署：Docker + 云服务器
+
+**输出格式**：
+
+```
+## 技术实现方案：[系统名称]
+
+### 1. 项目结构
+（目录树，含 src/、config/、scripts/、tests/）
+
+### 2. 核心代码实现
+（逐模块给出关键代码片段，含注释）
+
+### 3. 数据库初始化脚本
+（DDL + 种子数据 SQL）
+
+### 4. 部署方案
+| 环境 | 地址 | 配置 | 备注 |
+|------|------|------|------|
+
+### 5. 成本估算
+| 项目 | 单价 | 数量 | 月成本 |
+|------|------|------|---------|
+
+### 6. 开发排期
+| 阶段 | 任务 | 工时（人天）| 依赖 |
+|------|------|-----------|------|
+```
+
+---
+
 ## 基线约定
 
 | 约定项 | 默认值 | 说明 |
 |-------|--------|------|
 | UI 设计基线 | Ant Design 3 风格 | 可被用户覆盖 |
 | 技术栈基线 | Node.js + MySQL + Redis + Docker | 可被用户覆盖 |
-| 引用时限 | 市场调研标注来源；竞品分析仅近 2 年 | 自动执行 |
+| 引用时限 | 标注来源；竞品分析仅近 2 年 | 自动执行 |
 | 功能分级 | P0/P1/P2/P3 | 统一标准 |
-| PRD 规范 | 10 章标准 + PRD 模板库 | references/prd-templates/ |
-| TE 审查 | 5 大维度 33 项 + 审查模板库 | references/te-templates/ |
 | 输出格式 | 中文 + 结构化（表格/列表/缩进） | 用户偏好 |
 | 平台默认 | 小程序 | 可从需求中自动识别 |
+
+---
+
+## 跨平台安装
+
+### WorkBuddy
+
+```
+clawhub install pm-agent
+```
+
+加载后通过 `@skill:pm-agent` 触发。
+
+### Cursor
+
+保存为 `.cursorrules` 或 `.cursor/rules/pm-agent.mdc`，在对话中 `@pm-agent` 引用。
+
+### Codex (OpenAI)
+
+将本文件内容作为 System Prompt 或 Project Instructions 粘贴，在对话中提及"pm-agent"或直接输入需求。
+
+### Claude Code
+
+保存为项目根目录 `CLAUDE.md` 或 `PMO.md`，Claude 自动加载。或直接在对话中粘贴本文件内容。
+
+### VS Code + Copilot
+
+保存为 workspace 中的 `instructions.md`，在 Copilot Chat 中 `#instructions.md` 引用。
+
+### Cline / Continue / 其他工具
+
+保存为本地 `.md` 文件，在对话中粘贴路径或直接粘贴内容。首次使用时说明："请按 pm-agent 引擎规则执行"。
 
 ---
 
@@ -324,25 +644,18 @@ TaskCreate: "Step 6: 技术实现"
 
 ---
 
-## 分享与安装
+## 更新记录
 
-**只需安装这一个 Skill**：
-
-```
-clawhub install pm-agent
-```
-
-所有子模块、PRD 模板、TE 审查模板全部包含在内。无需安装任何其他 Skill。
+| 版本 | 日期 | 变更 |
+|------|------|------|
+| v5.0 | 2026-06-03 | **跨平台重构**：全部 8 个模块指令内联到 SKILL.md，去除平台依赖，支持 WorkBuddy / Cursor / Codex / Claude Code / Copilot 等 |
+| v4.0 | 2026-06-03 | 重构为 Skill Package，8 个子模块从独立 Skill 改为 references 模块 |
+| v3.0 | 2026-06-02 | 集成 TE 逻辑审查，DAG 从 7 步扩展为 8 步 |
+| v2.0 | 2026-06-01 | 集成 PRD 生成，支持全流程一键编排 |
+| v1.0 | 2026-05-30 | 初始版本，6 个 PM 子模块基础编排 |
 
 ---
 
-## 与 v3.0 的本质变化
+## License
 
-| 维度 | v3.0（旧） | v4.0（新） |
-|------|-----------|-----------|
-| 安装 | 需 9 个独立 Skill | 只需 1 个 pm-agent |
-| 子模块 | 8 个独立 Skill（`Skill` 工具动态加载） | 8 个 references 模块（`Read` 工具读取） |
-| 单模块调用 | 不支持（必须先装子 Skill 才能单独调） | 支持——引擎识别意图后 Read 对应模块 |
-| 模块更新 | 需分别编辑子 Skill 文件 | 在引擎内统一管理（Read→Edit references） |
-| 分享 | 需说明"请安装全部 9 个" | "安装这一个就行" |
-| 类型 | `skill-orchestration` | `skill-package` |
+MIT License — 可自由修改、分享、用于商业项目
