@@ -12,6 +12,7 @@
 |-------|------|
 | 🐍 [chen-python-skills](./chen-python-skills/) | Python 基础语法库（30+ 核心主题） |
 | 🕸️ [chen-knowledge-web](./chen-knowledge-web/) | 知识组网扩展器（5 维网状展开） |
+| 🧪 [prd-test-skills](./prd-test-skills/) | PRD 测试工程 — 需求逻辑审查、场景穷举、漏洞检测 |
 
 ---
 
@@ -32,6 +33,7 @@ git clone https://github.com/cyj4578/chen-skillshub.git
 # 或安装独立 Skill
 clawhub install chen-python-skills
 clawhub install chen-knowledge-web
+clawhub install prd-test-skills
 ```
 
 ---
@@ -58,6 +60,15 @@ clawhub install chen-knowledge-web
 | 同名消歧 | 自动识别同名实体，逐一独立展开 |
 | 时间线补充 | 历史类知识点自动补充同期全球大事件 |
 | 递归深挖 | 每个子节点可继续展开，知识量指数增长 |
+
+### prd-test-skills — PRD 测试工程
+
+| 能力 | 说明 |
+|------|------|
+| 逻辑审查 | 4 阶段结构化审查（结构完整性 → 功能逻辑 → 交互细节 → 数据一致性） |
+| 场景穷举 | 正常/边界/异常/并发/状态转换 5 类场景全覆盖 |
+| 漏洞检测 | 6 大常见 PRD 漏洞模式（条件缺失、状态遗漏、并发冲突等） |
+| 输出报告 | 分级报告（Critical / Major / Minor） + 逐项修复建议 |
 
 ---
 
