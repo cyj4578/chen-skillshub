@@ -13,6 +13,8 @@
 | 🐍 [chen-python-skills](./chen-python-skills/) | Python 基础语法库，覆盖 30+ 核心主题 |
 | 🕸️ [chen-knowledge-web](./chen-knowledge-web/) | 知识组网扩展器，5 维网状展开 |
 | 📋 [chen-prd-skills](./chen-prd-skills/) | PRD 书写规范，10 章标准结构 + 标识体系 + 模板 |
+| 🔒 [mini-program-sast](./mini-program-sast/) | 小程序前端静态安全扫描，AppID → 缓存包 → 漏洞报告 |
+| 🌐 [web-sast](./web-sast/) | Web 前端静态安全扫描，URL → 页面源码 → 漏洞报告 |
 | 🧪 [prd-test-skills](./prd-test-skills/) | PRD 测试工程，逻辑审查 + 场景穷举 + 漏洞检测 |
 
 ---
@@ -68,6 +70,26 @@
 | 场景穷举 / Scenarios | 正常 / 边界 / 异常 / 并发 / 状态转换 5 类场景全覆盖 |
 | 漏洞检测 / Gap Detection | 常见 PRD 漏洞模式（条件缺失、状态遗漏、并发冲突等） |
 | 输出报告 / Output | 分级报告（Critical / Major / Minor）+ 逐项修复建议 + 可复用的审查报告模板 |
+
+### 🔒 mini-program-sast — 小程序安全扫描 / Mini Program SAST
+
+| 能力 / Capability | 说明 / Description |
+|------|------|
+| 扫描流程 / Workflow | 提供 AppID → 自动定位本地 `.wxapkg` 缓存 → 提取代码 → 模式匹配 → HTML 报告 |
+| 检测矩阵 / Detection | 18 项小程序专用规则：明文存储凭证、code 泄露、AppSecret 硬编码、Mock 残留等 |
+| 包体分析 / Package | 主包 + 分包熵值检测、加密状态识别、WMPF 格式兼容 |
+| 输出报告 / Output | 10 章 HTML 审计报告（浏览器打印导出 PDF），含修复代码示例 |
+| 零网络请求 / Offline | 完全离线扫描，不向微信服务器或小程序后端发送任何请求 |
+
+### 🌐 web-sast — Web 安全扫描 / Web SAST
+
+| 能力 / Capability | 说明 / Description |
+|------|------|
+| 扫描流程 / Workflow | 提供 URL → HTTP 头 + SSL → 源码提取 → 模式匹配 → HTML 报告 |
+| 检测矩阵 / Detection | 15 条规则：硬编码密钥、XSS/CSRF、eval/innerHTML、安全头缺失等 |
+| 4 阶段 / Phases | 表面扫描（安全头/SSL）→ 源码提取（JS/CSS）→ 深度扫描（grep 模式库）→ 报告 |
+| 输出报告 / Output | 9 章 HTML 审计报告（浏览器打印导出 PDF），含修复代码示例 + 等保映射 |
+| 零副作用 / Safe | 只读 GET 请求，不提交表单、不写入数据、不对目标发起攻击 |
 
 ---
 
